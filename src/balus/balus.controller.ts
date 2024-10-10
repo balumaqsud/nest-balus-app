@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Put, Delete, Param, Query, Body } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Query, Body, NotFoundException } from '@nestjs/common';
 import { CreateBaluDto } from './dto/create-balu-dto';
 import { BalusService } from './balus.service';
 import { UpdateBaluDto } from './dto/update-balu-dto';
+
 
 @Controller('balus')
 export class BalusController {
@@ -15,7 +16,13 @@ export class BalusController {
     // GET /balus/:id ---> { ... }
     @Get(':id')
     getOneBalu(@Param('id') id: string) {
-        return this.balusservice.getBalu(+id)
+        try {
+            return this.balusservice.getBalu(+id)
+            
+        } catch (error) {
+            throw new NotFoundException({message: "there are no balu with this id"})
+        }
+        
     }
 
     //POST /balus ---> { ...}
