@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Put, Delete, Param, Query, Body, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Query, Body, NotFoundException, ParseIntPipe, UseGuards, ValidationPipe } from '@nestjs/common';
 import { CreateBaluDto } from './dto/create-balu-dto';
 import { BalusService } from './balus.service';
 import { UpdateBaluDto } from './dto/update-balu-dto';
+import { BeltGuard } from 'src/belt/belt.guard';
 
 
 @Controller('balus')
@@ -15,9 +16,9 @@ export class BalusController {
     }
     // GET /balus/:id ---> { ... }
     @Get(':id')
-    getOneBalu(@Param('id') id: string) {
+    getOneBalu(@Param('id', ParseIntPipe) id: number) {
         try {
-            return this.balusservice.getBalu(+id)
+            return this.balusservice.getBalu(id)
             
         } catch (error) {
             throw new NotFoundException({message: "there are no balu with this id"})
@@ -27,7 +28,8 @@ export class BalusController {
 
     //POST /balus ---> { ...}
     @Post()
-    createBalu(@Body() createBaluDto: CreateBaluDto ) {
+    @UseGuards(BeltGuard)
+    createBalu(@Body(new ValidationPipe()) createBaluDto: CreateBaluDto ) {
         return this.balusservice.createBalu(createBaluDto)
     }
     // PUT /balus/:id ---> { ... }
